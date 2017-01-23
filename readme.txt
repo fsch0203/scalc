@@ -26,7 +26,7 @@ Change history
 
 Version 1.201
 - Notation integer added
-- Tracking by Piwik added
+- Tracking Piwik added
 
 Version 1.200
 - Support for complex numbers

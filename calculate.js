@@ -1,6 +1,6 @@
 /*jshint eqeqeq:false, -W041, -W098 */
 
-// uncomment scalc.js line 825 to show pressed keys for instruction
+// uncomment scalc.js line 825 to show pressed keys for instruction 
 
 var version = '1.201'; //set for web-version; kit and ext get version number from package/manifest
 var run_as = 'web'; //run as web-application (default: web), as chrome-extension (ext), as chrome-app (app) or as NodeWebkit-app (kit)
