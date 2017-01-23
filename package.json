@@ -1,0 +1,24 @@
+{
+    "name": "Mouseless Stack-Calculator kit",
+    "version": "1.201",
+    "description": "An innovative RPN and stack-calculator with keyboard input",
+    "icons": {
+        "32": "c32v01.png",
+        "48": "c48v01.png",
+        "128": "c128v01.png"
+    },
+    "main": "popup.html",
+    "window": {
+        "frame": true,
+        "toolbar": false,
+        "resizable": false,
+        "icon":"c32v01.png",
+        "width": 615,
+        "height": 570
+    },
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "Frans Schrijver",
+    "license": "GPL"
+}

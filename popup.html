@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<!--
+mouseless stack calculator is written by Frans Schrijver, 2008 - 2017
+Copyright: GPL
+-->
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="author" content="Frans Schrijver">
+    <meta name="keywords" content="rpn,calculator,rekenmachine,berekening,calculation,npv,
+	irr,scientific,algebra,statistics,hp, currency">
+        <meta name="description" content="online mouseless rpn calculator">
+        <meta name="robots" content="index,follow">
+        <script type="text/javascript" src="decimal.min.js"></script>
+        <script type="text/javascript" src="languages.js"></script>
+        <script type="text/javascript" src="scalc.js"></script>
+        <script type="text/javascript" src="calculate.js"></script>
+        <script type="text/javascript" src="fader.js"></script>
+        <script type="text/javascript">
+            var _paq = _paq || [];
+            // tracker methods like "setCustomDimension" should be called before "trackPageView"
+            _paq.push(['trackPageView']);
+            _paq.push(['enableLinkTracking']);
+            (function () {
+                var u = "http://scriptel.nl/piwik/";
+                _paq.push(['setTrackerUrl', u + 'piwik.php']);
+                _paq.push(['setSiteId', '1']);
+                var d = document,
+                    g = d.createElement('script'),
+                    s = d.getElementsByTagName('script')[0];
+                g.type = 'text/javascript';
+                g.async = true;
+                g.defer = true;
+                g.src = u + 'piwik.js';
+                s.parentNode.insertBefore(g, s);
+            })();
+        </script>
+</head>
+<title>mouseless stack-calculator</title>
+<link href="favicon.ico" rel="shortcut icon">
+<link rel=StyleSheet href="scalc.css">
+
+<body>
+    <div ID="options" class="popup"></div>
+    <div ID="notations" class="popup"></div>
+    <div ID="basecur" class="popup"></div>
+    <div ID="entry" class="popup"></div>
+    <div ID="pressedkey" class="popup"></div>
+    <!-- show pressed key for instruction reasons -->
+    <form method="post" name="rpncal" action="index.html">
+        <div id="main_container">
+            <div id="box1">
+                <!--header-->
+                <div id="box11">
+                    <i class="gray subtitle" title="Use keyboard for data entry">mouseless</i>
+                </div>
+                <div id="box12">
+                    <span class="blue title" title="Use keyboard for data entry" id="name">Stack-Calculator</span>
+                </div>
+                <div id="box13">
+                    <img src="c128v01.png" id="logo" alt="rpn01.ico, 9 kB" title="rpn01" height="48" width="48">
+                </div>
+            </div>
+            <div id="box2">
+                <!--stack-->
+                <textarea readonly cols="1" rows="1" name="label5" class="stacklabel">^</textarea>
+                <br>
+                <textarea readonly cols="1" rows="1" name="label4" class="stacklabel">b:</textarea>
+                <textarea readonly cols="1" rows="1" name="opstack4" class="opstack"></textarea>
+                <textarea readonly cols="1" rows="1" name="stack4" class="stack"></textarea>
+                <textarea readonly cols="1" rows="1" name="result4" class="result"></textarea>
+                <textarea readonly cols="1" rows="1" name="label3" class="stacklabel">a:</textarea>
+                <textarea readonly cols="1" rows="1" name="opstack3" class="opstack"></textarea>
+                <textarea readonly cols="1" rows="1" name="stack3" class="stack"></textarea>
+                <textarea readonly cols="1" rows="1" name="result3" class="result"></textarea>
+                <textarea readonly cols="1" rows="1" name="label2" class="stacklabel">z:</textarea>
+                <textarea readonly cols="1" rows="1" name="opstack2" class="opstack"></textarea>
+                <textarea readonly cols="1" rows="1" name="stack2" class="stack"></textarea>
+                <textarea readonly cols="1" rows="1" name="result2" class="result"></textarea>
+                <textarea readonly cols="1" rows="1" name="label1" class="stacklabel">y:</textarea>
+                <textarea readonly cols="1" rows="1" name="opstack1" class="opstack"></textarea>
+                <textarea readonly cols="1" rows="1" name="stack1" class="stack"></textarea>
+                <textarea readonly cols="1" rows="1" name="result1" class="result"></textarea>
+                <textarea readonly cols="1" rows="1" name="label0" class="stacklabel">x:</textarea>
+                <textarea readonly cols="1" rows="1" name="opstack0" id="opstack0" class="opstackx"></textarea>
+                <textarea readonly cols="1" rows="1" name="stack0" id="stack0" title="Use keyboard for data entry" class="stackx"></textarea>
+                <textarea readonly cols="1" rows="1" name="result0" class="result"></textarea>
+            </div>
+            <div id="box3">
+                <!--menu-->
+                <div id="box31">
+                    <span class="htmlwindow" name="htmlWindow1" title="Use keyboard for data entry">tekst</span>
+                </div>
+                <div id="box32">
+                    <span class="htmlwindow" name="htmlWindow2" title="Use keyboard for data entry">tekst2</span>
+                </div>
+                <div id="box33">
+                    <span class="htmlwindow" name="htmlWindow3" title="Use keyboard for data entry">tekst3</span>
+                </div>
+            </div>
+            <div id="box4">
+                <!--statusbar-->
+                <div id="box41">
+                    <textarea id="status0" readonly cols="1" rows="1" name="status0" class="status"></textarea>
+                </div>
+                <div id="box42">
+                    <textarea id="status1" readonly cols="1" rows="1" name="status1" class="status"></textarea>
+                </div>
+                <div id="box43">
+                    <textarea id="status2" readonly cols="1" rows="1" name="status2" class="status"></textarea>
+                </div>
+                <div id="box44">
+                    <textarea id="status3" readonly cols="1" rows="1" name="status3" class="status"></textarea>
+                </div>
+            </div>
+            <div id="box5">
+                <!-- footer -->
+                <a id="link" href=#>Mouseless Stack Calculator</a> <span id="byTitle">by</span> Frans Schrijver, Copyright
+                2008-<span id="thisYear"></span>: GPL,
+                <span id="versionTitle">version</span>: <span id="version"></span>
+            </div>
+        </div>
+    </form>
+</body>
+
+</html>
