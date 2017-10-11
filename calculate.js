@@ -2,7 +2,7 @@
 
 // uncomment scalc.js line 825 to show pressed keys for instruction 
 
-var version = '1.201'; //set for web-version; kit and ext get version number from package/manifest
+var version = '1.210'; //set for web-version; kit and ext get version number from package/manifest
 var run_as = 'web'; //run as web-application (default: web), as chrome-extension (ext), as chrome-app (app) or as NodeWebkit-app (kit)
 try {
     var gui = require('nw.gui');
@@ -76,21 +76,18 @@ var m = new Array(25); //array with menu items
 for (var i = 0; i < m.length; ++i)
     m[i] = new Array(1);
 
-function analytics() {
-    if (run_as != 'app') { //analytics not permitted in app
-        var _gaq = _gaq || [];
-        _gaq.push(['_setAccount', 'UA-3587690-5']);
-        _gaq.push(['_trackPageview']);
-        (function() {
-            var ga = document.createElement('script');
-            ga.type = 'text/javascript';
-            ga.async = true;
-            ga.src = 'https://ssl.google-analytics.com/ga.js';
-            var s = document.getElementsByTagName('script')[0];
-            s.parentNode.insertBefore(ga, s);
-        })();
-    }
-}
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-3587690-5']);
+_gaq.push(['_trackPageview']);
+
+(function () {
+    var ga = document.createElement('script');
+    ga.type = 'text/javascript';
+    ga.async = true;
+    ga.src = 'https://ssl.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(ga, s);
+})();
 
 function thisYear() { // for copyright statement
     var d = new Date();
@@ -111,6 +108,11 @@ function scalchelp() { //open website
         win = window.open("http://www.stack-calculator.com", "_blank");
         win.focus();
     }
+}
+
+function storerecord(name, value) {
+    store[name] = value;
+    localStorage.setItem('st01', JSON.stringify(store));
 }
 
 function getLocalStorage() {
@@ -139,17 +141,17 @@ function getLocalStorage() {
 
 function applyStorage() { //set memories, stacks, etc
     var i, n, f, r, x;
-    f = document.rpncal;
+    // f = document.rpncal;
     if (store.rnd) {
         rnd_calc = store.rnd + 10;
     }
-    f.status1.value = store.not + " " + store.rnd;
+    // f.status1.value = store.not + " " + store.rnd;
     if (store.deg == 'deg') {
         dgmode = pi.div(180);
-        f.status0.value = _lg.degrees;
+        // f.status0.value = _lg.degrees;
     } else {
         dgmode = 1;
-        f.status0.value = _lg.radian;
+        // f.status0.value = _lg.radian;
     }
     for (i = 0; i < 30; i++) { // initial setting of memories
         lastanswers[i] = [''];
@@ -273,7 +275,7 @@ function applyStorage() { //set memories, stacks, etc
     m[10][1] = ['&#160', store.rate, _lg.rate];
     m[10][11] = ['&#160', store.rate, _lg.rate];
     m[10][21] = ['&#160', store.rate, _lg.rate];
-    f.status2.value = _lg.rate + ': ' + dpsep((100 * store.rate).toPrecision(3)).toString() + '%';
+    // f.status2.value = _lg.rate + ': ' + dpsep((100 * store.rate).toPrecision(3)).toString() + '%';
     m[10][3] = ['&#160', store.pv, 'pv'];
     m[10][13] = ['&#160', store.prv, 'prv'];
     m[10][5] = ['&#160', store.fv, 'fv'];
@@ -727,10 +729,11 @@ function toComplex(re, im) {
     Decimal.config({
         precision: p
     });
-    var s = '(' + re.times(1);
+    // var s = '(' + re.times(1);
+    var s = re.times(1);
     s += (im.isNeg()) ? ' - ' : ' + ';
     s += im.abs().times(1);
-    s += 'i)';
+    s += 'i';
     return s;
 }
 
@@ -855,7 +858,7 @@ function storemem(n) {
     computed = true;
 }
 
-function storefree() {
+function storefree() { //TODO: exetend to complex
     for (var n = 0; n < 30; n++) {
         if (isNaN(memx[n]) || memx[n] == "") {
             memx[n] = Decimal(stack[0]).toString();
@@ -1114,81 +1117,6 @@ function calculate() { //dir is 1 in case of direct calculation
     }
 }
 
-function enterx() { // the enter button in rpn-mode
-    var cpl = complex2dec(stack[0]); //separate re- and im-part
-    var x = document.rpncal.stack0.value;
-    if (x === stack[0]) { //only the case for new entered values
-        stack[0] = cpl.re;
-        stack_im[0] = cpl.im;
-    }
-    stack[0] = (stack[0] === '') ? '0' : stack[0];
-    stack[0] = hms2dec(stack[0]);
-    stack[0] = imp2dec(stack[0]);
-    stack[0] = frac2dec(stack[0]);
-    //stack[0] = date2dec(stack[0]);
-    fillundostack();
-    if (hisstack[0] == '') {
-        fillhisstack0();
-    }
-    pushStack();
-    display();
-    // }
-    enterpressed = true;
-    computed = false;
-}
-
-function enterop(oper, dir) { //enter operator
-    //dir is 'ifix' for infix and 'pfix' for postfix or prefix
-    //oper is operator
-    var entry = document.rpncal.stack0.value;
-    var cpl = complex2dec(stack[0]); //separate re- and im-part
-    if (entry === stack[0]) { //only new values if entry is given
-        stack[0] = cpl.re;
-        stack_im[0] = cpl.im;
-    }
-    stack[0] = hms2dec(stack[0]);
-    stack[0] = imp2dec(stack[0]);
-    stack[0] = frac2dec(stack[0]);
-    sp = 0;
-    if (stack[0] == "-") stack[0] = "";
-    if (store.rpnmode == 'stack') { //stack mode
-        if (stack[0].length == 0) { //only if stack[0]=="" (not if 0)
-            if (dir == "ifix") {
-                //no push
-            } else { //operator is prefix
-                pushStack();
-            }
-            opstack[0] = oper;
-        } else {
-            if (dir == "ifix") { //new operator
-                //immediate calculate if there is no uncertainty
-                if (oper == "+" && opstack[0] == "+") calculate(); // + followed after +
-                if (oper == "-" && opstack[0] == "+") calculate(); // - followed after +
-                if (oper == "*" && opstack[0] == "*") calculate(); // * followed after *
-                if (oper == "/" && opstack[0] == "*") calculate(); // / followed after *
-                pushStack();
-                opstack[0] = oper;
-            } else { //operator is postfix
-                pushStack();
-                opstack[0] = oper;
-                stack[0] = stack[1];
-                stack_im[0] = stack_im[1];
-                hisstack[0] = hisstack[1];
-                hisopstack[0] = hisopstack[1];
-                calculate();
-            }
-        }
-    } else { //rpn mode
-        if (dir == 'pfix') {
-            pushStack();
-        }
-        opstack[0] = oper;
-        calculate();
-    }
-    display();
-    //enterpressed=true;
-}
-
 function pushStack() {
     if (stack[0] != '') stack[0] = stack[0].toString(); //make it nice looking (.3 -> 0.3)
     // if (stack[0] != '' && hisstack[0] == "") hisstack[0] = roundhis(stack[0]); //only required in stack mode
@@ -1374,11 +1302,11 @@ function makeComplex() { // y,x to y+xi
     var b = Decimal(stack[0]);
     stack[0] = a;
     stack_im[0] = b;
-    fillhisstack0();
-    store.not = m[2][11][2]; //set notation to complex
-    storerecord("not", m[15][11][2]);
-    display();
-    statusnot(store.not + " " + store.rnd);
+    // fillhisstack0();
+    // store.not = m[15][12][2]; //set notation to complex
+    // storerecord("not", m[15][12][2]);
+    // display();
+    // statusnot(store.not + " " + store.rnd);
 }
 
 function makePolar() { //y,x to y<x
@@ -1386,11 +1314,11 @@ function makePolar() { //y,x to y<x
     var phi = Decimal(stack[0]).times(dgmode);
     stack[0] = r.times(Decimal.cos(phi));
     stack_im[0] = r.times(Decimal.sin(phi));
-    fillhisstack0();
-    store.not = m[2][12][2]; // set notation to polar
-    storerecord("not", m[15][12][2]);
-    display();
-    statusnot(store.not + " " + store.rnd);
+    // fillhisstack0();
+    // store.not = m[15][13][2]; // set notation to polar
+    // storerecord("not", m[15][13][2]);
+    // display();
+    // statusnot(store.not + " " + store.rnd);
 }
 
 function conjugate() { // y+xi to y-xi
@@ -1461,10 +1389,10 @@ function log() {
 
 function sin() {
     // sin(a+bi)=sin(a) * cosh(b) + icos(a) * sinh(b)
-    var a = Decimal(stack[0]);
-    var b = Decimal(stack_im[0]);
+    var a = Decimal(stack[0]).times(dgmode);
+    var b = Decimal(stack_im[0]).times(dgmode);
     if (b.isZero()) {
-        stack[0] = Decimal(stack[0]).times(dgmode).sin();
+        stack[0] = a.sin();
     } else {
         stack[0] = a.sin().times(b.cosh());
         stack_im[0] = a.cos().times(b.sinh());
@@ -1473,10 +1401,10 @@ function sin() {
 
 function cos() {
     // cos(a+bi)=cos(a) * cosh(b) − isin(a) * sinh(b)
-    var a = Decimal(stack[0]);
-    var b = Decimal(stack_im[0]);
+    var a = Decimal(stack[0]).times(dgmode);
+    var b = Decimal(stack_im[0]).times(dgmode);
     if (b.isZero()) {
-        stack[0] = Decimal(stack[0]).times(dgmode).cos();
+        stack[0] = a.cos();
     } else {
         stack[0] = a.cos().times(b.cosh());
         stack_im[0] = a.sin().times(b.sinh()).neg();
@@ -1484,8 +1412,8 @@ function cos() {
 }
 
 function tan() {
-    var a = Decimal(stack[0]).times(2);
-    var b = Decimal(stack_im[0].times(2));
+    var a = Decimal(stack[0]).times(dgmode).times(2);
+    var b = Decimal(stack_im[0].times(dgmode).times(2));
     var d = a.cos().plus(b.cosh());
     if (b.isZero()) {
         stack[0] = Decimal(stack[0]).times(dgmode).tan();
@@ -1520,8 +1448,8 @@ function atan() {
         re = b2.times(-0.5);
         im = a2.times(0.5);
     }
-    stack[0] = re;
-    stack_im[0] = im;
+    stack[0] = re.div(dgmode);
+    stack_im[0] = im.div(dgmode);
 
     // stack[0] = Decimal(stack[0]).atan().div(dgmode);
 }
@@ -1545,8 +1473,8 @@ function asin() {
     var a4 = Decimal.hypot(a3, b3).ln();
     var b4 = Decimal.atan2(b3, a3);
     //-i * log(zi + sqrt(1 - z^2)): (b4, -a4)
-    stack[0] = b4;
-    stack_im[0] = a4.neg();
+    stack[0] = b4.div(dgmode);
+    stack_im[0] = a4.neg().div(dgmode);
 
     // stack[0] = Decimal(stack[0]).asin().div(dgmode);
 }
@@ -1570,8 +1498,8 @@ function acos() {
     var a4 = Decimal.hypot(a3, b3).ln();
     var b4 = Decimal.atan2(b3, a3);
     //i * ln(z - i * sqrt(1 - z^2)): (-b4, a4)
-    stack[0] = b4.neg();
-    stack_im[0] = a4;
+    stack[0] = b4.div(dgmode).neg();
+    stack_im[0] = a4.div(dgmode);
 
     // stack[0] = Decimal(stack[0]).acos().div(dgmode);
 }
@@ -2274,7 +2202,7 @@ function setbasecurrency(n) {
 
 function convertrate(n, dir) {
     stack_im[0] = (stack_im[0] == '') ? Decimal(0) : Decimal(stack_im[0]);
-    stack_im[1] = (stack_im[1] == '') ? Decimal(0) : Decimal(stack_im[1]);
+    // stack_im[1] = (stack_im[1] == '') ? Decimal(0) : Decimal(stack_im[1]);
     fillundostack();
     pushStack();
     hisstack[0] = "";
@@ -2743,8 +2671,8 @@ function defineconstants() {
 }
 
 function onebyx() {
-    var x_re = Decimal(stack[1]);
-    var x_im = Decimal(stack_im[1]);
+    var x_re = Decimal(stack[0]);
+    var x_im = Decimal(stack_im[0]);
     if (x_re.isZero() && x_im.isZero()) {
         stack[0] = Number.POSITIVE_INFINITY;
         stack_im[0] = Number.POSITIVE_INFINITY;

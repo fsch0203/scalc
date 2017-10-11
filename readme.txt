@@ -24,9 +24,11 @@ Main features
 
 Change history
 
-Version 1.201
+Version 1.210
 - Notation integer added
-- Tracking Piwik added
+- Bug fix: trig functions now work again with degrees
+- Bug fix: entry if digit f in hexadecimal now working
+- Minor bugs fixed
 
 Version 1.200
 - Support for complex numbers

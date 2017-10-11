@@ -6,18 +6,10 @@ window.addEventListener("DOMContentLoaded", Init);
 
 function Init() {
     var f = document.rpncal;
-    // piwik();
     getLocalStorage(); //including language setting _lg
     defineconstants(); //set m[]
     applyStorage(); //set memories, stacks, etc
     setFooter(); //status bar + footer
-    try {
-        _paq.push(['trackEvent', 'Init','run_as', run_as]);
-        _paq.push(['trackEvent', 'Init','version', version]);
-        _paq.push(['trackEvent', 'Init','mode',store.rpnmode]);
-    } catch (e) {
-        console.log("trackevent notation failed");
-    }
     document.getElementById("link").onclick = function() {
         scalchelp();
     };
@@ -51,6 +43,13 @@ function display() {
     for (var i = 0; i < 5; i++) {
         stack[sp + i] = (stack[sp + i] === undefined) ? '' : stack[sp + i];
         stack_im[sp + i] = (stack_im[sp + i] === undefined) ? '' : stack_im[sp + i];
+        if (!(stack_im[sp+i].length==0 || stack_im[sp+i].toString() ==='0')){
+            // console.log('i stack_im' + ': '+ i+' '+stack_im[sp+i]+' ' +stack_im[sp+i].length);
+            var prec = Decimal(10).pow(Decimal(rnd_calc).neg()); //precision
+            if (Decimal(stack_im[sp + i]).abs().lt(prec)) { //if im-part is too small
+                stack_im[sp+i]='';
+            } 
+        }
         var t = stack_im[sp + i].toString();
         if (stack[sp + i] == 'NaN') {
             st[i] = 'Error';
@@ -115,6 +114,10 @@ function display() {
     f.result3.value = dpsep(hisstack[sp + 3]);
     f.result4.value = dpsep(hisstack[sp + 4]);
 
+    f.status1.value = store.not + " " + store.rnd;
+    f.status0.value = (store.deg == 'deg')? _lg.degrees : _lg.radian;
+    f.status2.value = _lg.rate + ': ' + dpsep((100 * store.rate).toPrecision(3)).toString() + '%';
+
     showmenu("start");
     savestacks();
     f.stack0.focus();
@@ -127,15 +130,6 @@ function wait(ms) {
         d2 = new Date();
     }
     while (d2 - d < ms);
-}
-
-function storerecord(name, value) {
-    store[name] = value;
-    // if (run_as == 'ext' || run_as == 'app') {
-    //     chrome.storage.local.set(store);
-    // } else { //web, kit
-    localStorage.setItem('st01', JSON.stringify(store));
-    // }
 }
 
 function rpnmodeon() {
@@ -216,11 +210,6 @@ function statusnot(s) { //set status1
     document.rpncal.status1.value = s;
     if (s != u) {
         s = s.substr(0, s.length - 3);
-        try {
-            _paq.push(['trackEvent', 'Notation', s]);
-        } catch (e) {
-            console.log("trackevent notation failed");
-        }
         colorFade('status1', 'background', 'e3e3e3', 'fafb94', 25, 10);
         setTimeout(function() {
             colorFade('status1', 'background', 'fafb94', 'e3e3e3', 25, 30);
@@ -258,7 +247,7 @@ function showmenu(layer) {
     //if (browser != 'chrome') m[0][17] = ['', ''];
     if (layer !== 'start') {
         try {
-            _paq.push(['trackEvent', 'Menu', layer]);
+            _gaq.push(['_trackEvent', 'Menu', layer]);
         } catch (e) {
             console.log("trackevent " + layer + " failed");
         }
@@ -679,6 +668,10 @@ function deleteChar() {
     }
 }
 
+function getstack0() {
+    return document.rpncal.stack0.value;
+}
+
 function getclipboard() { //paste clipboard to x
     var x = "";
     try { // works in kit
@@ -728,6 +721,83 @@ function pasteClipboard() {
     //f.stack0.value=cliptext.value;
     cliptext.remove();
     // console.log('Clipboard content: ' + clipboardContent);
+}
+
+function enterx() { // the enter button in rpn-mode
+    var cpl = complex2dec(stack[0]); //separate re- and im-part
+    // var x = document.rpncal.stack0.value;
+    var x = getstack0();
+    if (x === stack[0]) { //only the case for new entered values
+        stack[0] = cpl.re;
+        stack_im[0] = cpl.im;
+    }
+    stack[0] = (stack[0] === '') ? '0' : stack[0];
+    stack[0] = hms2dec(stack[0]);
+    stack[0] = imp2dec(stack[0]);
+    stack[0] = frac2dec(stack[0]);
+    //stack[0] = date2dec(stack[0]);
+    fillundostack();
+    if (hisstack[0] == '') {
+        fillhisstack0();
+    }
+    pushStack();
+    display();
+    // }
+    enterpressed = true;
+    computed = false;
+}
+
+function enterop(oper, dir) { //enter operator
+    //dir is 'ifix' for infix and 'pfix' for postfix or prefix
+    //oper is operator
+    // var entry = document.rpncal.stack0.value;
+    var entry = getstack0();
+    var cpl = complex2dec(stack[0]); //separate re- and im-part
+    if (entry === stack[0]) { //only new values if entry is given
+        stack[0] = cpl.re;
+        stack_im[0] = cpl.im;
+    }
+    stack[0] = hms2dec(stack[0]);
+    stack[0] = imp2dec(stack[0]);
+    stack[0] = frac2dec(stack[0]);
+    sp = 0;
+    if (stack[0] == "-") stack[0] = "";
+    if (store.rpnmode == 'stack') { //stack mode
+        if (stack[0].length == 0) { //only if stack[0]=="" (not if 0)
+            if (dir == "ifix") {
+                //no push
+            } else { //operator is prefix
+                pushStack();
+            }
+            opstack[0] = oper;
+        } else {
+            if (dir == "ifix") { //new operator
+                //immediate calculate if there is no uncertainty
+                if (oper == "+" && opstack[0] == "+") calculate(); // + followed after +
+                if (oper == "-" && opstack[0] == "+") calculate(); // - followed after +
+                if (oper == "*" && opstack[0] == "*") calculate(); // * followed after *
+                if (oper == "/" && opstack[0] == "*") calculate(); // / followed after *
+                pushStack();
+                opstack[0] = oper;
+            } else { //operator is postfix
+                pushStack();
+                opstack[0] = oper;
+                stack[0] = stack[1];
+                stack_im[0] = stack_im[1];
+                hisstack[0] = hisstack[1];
+                hisopstack[0] = hisopstack[1];
+                calculate();
+            }
+        }
+    } else { //rpn mode
+        if (dir == 'pfix') {
+            pushStack();
+        }
+        opstack[0] = oper;
+        calculate();
+    }
+    display();
+    //enterpressed=true;
 }
 
 // *****************************************************************************
@@ -1280,7 +1350,8 @@ function chkkey(e) { //is triggered when 'onkeypress' **************************
                 calculate();
             }
         } else if (keychar == "f") {
-            if (!(computed || enterpressed) && s0.substring(0, 1) == "0" && s0.length == 1) {
+            if (!(computed || enterpressed) && (s0.substring(0, 2) == '0x')) {
+            // if (!(computed || enterpressed) && s0.substring(0, 1) == "0" && s0.length == 1) {
                 addChar(keychar);
             } else {
                 shift = 'f';
@@ -1312,8 +1383,9 @@ function chkkey(e) { //is triggered when 'onkeypress' **************************
             shift = 'r';
             showmenu("memx");
         } else if (keychar == "c" && !ctrl) { //no response on ctrl-c
-            if (!(computed || enterpressed) && ((s0.substring(0, 1) == "0" &&
-                    s0.length == 1) || s0.substring(0, 2) == '0x')) {
+            if (!(computed || enterpressed) && (s0.substring(0, 2) == '0x')) {
+            // if (!(computed || enterpressed) && ((s0.substring(0, 1) == "0" &&
+                    // s0.length == 1) || s0.substring(0, 2) == '0x')) {
                 addChar(keychar);
             } else {
                 shift = 'c';
@@ -1392,7 +1464,7 @@ function chkkey(e) { //is triggered when 'onkeypress' **************************
             enterop("/", "ifix");
         } else if (keychar == "p") {
             pix();
-        } else if (keychar == "b") {
+        } else if (keychar == "b") { //0b.. -> binary input; 0x..b.. -> hex input
             if (!(computed || enterpressed) && ((s0.substring(0, 1) == "0" &&
                     s0.length == 1) || s0.substring(0, 2) == '0x')) {
                 addChar(keychar);

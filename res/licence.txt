@@ -2,7 +2,7 @@ Mouseless Stack-Calculator is a innovative calculator and currency
 converter with fast keyboard entry. It has two modes: an RPN-mode 
 and a stack-mode.
 
-Copyright(C) 2016 Frans Schrijver
+Copyright(C) 2017 Frans Schrijver
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

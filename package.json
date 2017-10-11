@@ -1,6 +1,6 @@
 {
     "name": "Mouseless Stack-Calculator kit",
-    "version": "1.201",
+    "version": "1.210",
     "description": "An innovative RPN and stack-calculator with keyboard input",
     "icons": {
         "32": "c32v01.png",
