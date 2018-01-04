@@ -1468,8 +1468,8 @@ function chkkey(e) { //is triggered when 'onkeypress' **************************
             if (!(computed || enterpressed) && ((s0.substring(0, 1) == "0" &&
                     s0.length == 1) || s0.substring(0, 2) == '0x')) {
                 addChar(keychar);
-            } else {
-                callwindow();
+            // } else {
+            //     callwindow();
             }
         } else if (keychar == "%") {
             enterop("%", "ifix");

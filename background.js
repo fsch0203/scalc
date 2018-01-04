@@ -1,13 +1,13 @@
-chrome.app.runtime.onLaunched.addListener(function() {
-	chrome.app.window.create('popup.html',{
-		id: 'MyWindowID',
-		bounds:{
-			width: 640,
-			height: 580,
-			left: 100,
-			top: 100
-		},
-		minWidth: 640,
-		minHeight: 580
-	});
-});
+chrome.browserAction.onClicked.addListener(function(tab) {
+    chrome.windows.create({
+      url: chrome.runtime.getURL("popup.html"),
+      type: "popup",
+      left: 5000,
+      top: 50,
+      width: 640,
+      height: 610
+    }, function(win) {
+      // win represents the Window object from windows API
+      // Do something after opening
+    });
+  });

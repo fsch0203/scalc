@@ -1,6 +1,6 @@
 {
     "name": "Mouseless Stack-Calculator Ext",
-    "version": "1.210",
+    "version": "1.220",
     "manifest_version": 2,
     "description": "An innovative RPN and stack-calculator with keyboard input (as chrome extension)",
     "icons": {
@@ -8,9 +8,11 @@
         "48": "c48v01.png",
         "128": "c128v01.png"
     },
+    "background": {
+        "scripts": ["background.js"]
+      },
     "browser_action": {
-        "default_icon": "c128v01.png",
-        "default_popup": "popup.html"
+        "default_icon": "c128v01.png"
     },
     "homepage_url": "http://www.stack-calculator.com",
     "content_security_policy": "script-src 'self' https://ssl.google-analytics.com; object-src 'self'",

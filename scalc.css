@@ -188,6 +188,7 @@ textarea {
     padding-left: 0.5mm;
     resize: none;
     padding-bottom: 0px;
+    overflow: hidden;
 }
 
 textarea.stack {
