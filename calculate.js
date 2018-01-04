@@ -2,7 +2,7 @@
 
 // uncomment scalc.js line 825 to show pressed keys for instruction 
 
-var version = '1.210'; //set for web-version; kit and ext get version number from package/manifest
+var version = '1.220'; //set for web-version; kit and ext get version number from package/manifest
 var run_as = 'web'; //run as web-application (default: web), as chrome-extension (ext), as chrome-app (app) or as NodeWebkit-app (kit)
 try {
     var gui = require('nw.gui');
@@ -519,8 +519,10 @@ function makehisstack(o) { //creates history-line just before calculation
             line += his0;
         }
     } else if (o == "^-1") {
-        if (hisop0 == "" && opValue(o) >= opValue(hisop0)) {
-            line += "1/(" + his0 + ")"; //in case there was no previous calculation
+        if (hisop0 == "") {
+            line += "1/" + his0; //in case there was no previous calculation
+        } else if (opValue(o) >= opValue(hisop0)) {
+            line += "1/(" + his0 + ")"; //second part between () if / precedes +,-,/ or *
         } else {
             line += "1/" + his0;
         }
@@ -2372,11 +2374,11 @@ function defineconstants() {
     m[0][24] = ['s', _lg.store_memory];
     m[0][25] = ['r', _lg.recall_memory];
     m[0][26] = ['c', _lg.clear_copy_paste];
-    if (run_as == 'ext') {
-        m[0][27] = ['b', _lg.open_in_window];
-    } else {
-        m[0][27] = ['', ''];
-    }
+    // if (run_as == 'ext') {
+    //     m[0][27] = ['b', _lg.open_in_window];
+    // } else {
+    m[0][27] = ['', ''];
+    // }
     m[0][28] = ['g', _lg.constants];
     m[0][29] = ['v', _lg.convert];
 
