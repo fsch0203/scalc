@@ -597,8 +597,8 @@ function formatoutput(s) {
         s = s.replace(/\./g, ",");
     }
     if (store.thousandssep === 'on' && s.indexOf('e') < 0 && not != 'h:m:s' && not != 'h:m' &&
-        not != 'frac' && not != 'complex' && not != 'polar' && s != 'Infinity' &&
-        s != '-Infinity' && s != 'Error') {
+        not != 'frac' && not != 'complex' && not != 'polar' && not != 'hex' && not != 'oct' && 
+        not != 'bin' && s != 'Infinity' && s != '-Infinity' && s != 'Error') {
         var thssep = (store.comma != 'c') ? "," : ".";
         var m = 1; //default string has decimal point
         var neg = "";

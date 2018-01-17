@@ -25,6 +25,7 @@ Main features
 Change history
 
 Version 1.220
+- No thousandseparator in case of hexadecimal, octal and binary numbers
 - Bug fix: corrected displayed expression in case of inverse function (1/x)
 - Extension now standard opens in seperate window; letter [b] no longer used
 
