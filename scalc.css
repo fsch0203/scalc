@@ -74,7 +74,7 @@ p {
 
 #pressedkey {
     left: 5px;
-    top: 5px;
+    top: 0px;
     border: none;
     font-size: 12pt;
     font-weight: bold;

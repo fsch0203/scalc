@@ -832,6 +832,7 @@ function chkkey_down(e) { //is triggered when 'onkeydown' **********************
     if (key == 17) ctrl = true; //reset when key_up
     key1 = key; //remember key for in chkkey, to use arrows in option menu
     if (key == 38) { // up arrow
+        if(store.showkey) showpressedkey('↑');
         if (shift == 'o' || shift === 'not') { //if options menu or notations menu open
             store.rnd += 1;
             rnd_calc += 1;
@@ -845,6 +846,7 @@ function chkkey_down(e) { //is triggered when 'onkeydown' **********************
             display();
         }
     } else if (key == 40) { // down arrow
+        if(store.showkey) showpressedkey('↓');
         if (shift == 'o' || shift === 'not') {
             store.rnd -= 1;
             rnd_calc -= 1;
@@ -861,10 +863,20 @@ function chkkey_down(e) { //is triggered when 'onkeydown' **********************
             display();
         }
     } else if (key == 86 && ctrl) { //ctrl-v
+        if(store.showkey) showpressedkey('ctrl-v');
         getclipboard();
     } else if (key == 67 && ctrl) { //ctrl-c
+        if(store.showkey) showpressedkey('ctrl-c');
         copyToClipboard(stack[0].toString());
         display();
+    } else if (key == 75 && ctrl) { //ctrl-k: hidden key to toggle store.showkey
+        if(store.showkey){
+            store.showkey = false;
+            showpressedkey('showkey off');
+        } else {
+            showpressedkey('showkey on');
+            store.showkey = true;
+        }
     } else if (key == 81 && ctrl) { //ctrl-q: hidden key to go back to factory settings
         clrstack();
         clrmem();
@@ -872,14 +884,17 @@ function chkkey_down(e) { //is triggered when 'onkeydown' **********************
         store = [];
         localStorage.setItem('st01', JSON.stringify(store));
     } else if (key == 222) { //foot '
+        if(store.showkey) showpressedkey('foot');
         keychar = "'";
         addChar(keychar);
     } else if (key == 8) { // backspace
+        if(store.showkey) showpressedkey('Backspace');
         if (e.preventDefault) {
             e.preventDefault();
         }
         deleteChar();
     } else if (key === 27) { // escape
+        if(store.showkey) showpressedkey('Escape');
         shift = '0';
         showoptions(0);
         shownotations(0);
@@ -905,7 +920,7 @@ function chkkey(e) { //is triggered when 'onkeypress' **************************
     if (key1 == 40) keychar = 'arrowdown';
     if (key === 13) keychar = 'enter';
     // uncomment next line to show pressed keys for instruction
-    // showpressedkey(keychar);
+    if(store.showkey) showpressedkey(keychar);
     if (shift == 'f') { //financial ********************************************
         shift = '0';
         if (keychar == m[9][0][0]) {
