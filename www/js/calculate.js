@@ -77,19 +77,6 @@ var m = new Array(25); //array with menu items
 for (var i = 0; i < m.length; ++i)
     m[i] = new Array(1);
 
-// var _gaq = _gaq || [];
-// _gaq.push(['_setAccount', 'UA-3587690-5']);
-// _gaq.push(['_trackPageview']);
-
-// (function () {
-//     var ga = document.createElement('script');
-//     ga.type = 'text/javascript';
-//     ga.async = true;
-//     ga.src = 'https://ssl.google-analytics.com/ga.js';
-//     var s = document.getElementsByTagName('script')[0];
-//     s.parentNode.insertBefore(ga, s);
-// })();
-
 function thisYear() { // for copyright statement
     var d = new Date();
     var n = d.getFullYear();
