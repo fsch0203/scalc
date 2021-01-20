@@ -2,8 +2,8 @@
 
 // uncomment scalc.js line 825 to show pressed keys for instruction 
 
-var version = '1.220'; //set for web-version; kit and ext get version number from package/manifest
-var run_as = 'web'; //run as web-application (default: web), as chrome-extension (ext), as chrome-app (app) or as NodeWebkit-app (kit)
+var version = '1.240'; //set for web-version; kit and ext get version number from package/manifest
+var run_as = 'web'; //run as web-application (default: web), as chrome or ms-extension (ext), as chrome-app (app) or as NodeWebkit-app (kit)
 try {
     var gui = require('nw.gui');
     version = gui.App.manifest.version;
@@ -30,6 +30,8 @@ var opstack = new Array(1); //stack of operators
 var hisstack = new Array(1); //stack of formulas
 var hisopstack = new Array(1); //stack of last used operators
 var store = { //global variables that are stored in localstorage
+    screenx: 1300, //position window
+    screeny: 100,
     rpnmode: 'stack', //stack or rpn
     rnd: 18, //number of decimals to be shown
     deg: 'rad',
@@ -99,6 +101,8 @@ function scalchelp() { //open website
 }
 
 function storerecord(name, value) {
+    store.screenx = window.screenX; //position is saved after every calculation
+    store.screeny = window.screenY;
     store[name] = value;
     localStorage.setItem('st01', JSON.stringify(store));
 }
@@ -585,7 +589,7 @@ function formatoutput(s) {
         s = s.replace(/\./g, ",");
     }
     if (store.thousandssep === 'on' && s.indexOf('e') < 0 && not != 'h:m:s' && not != 'h:m' &&
-        not != 'frac' && not != 'complex' && not != 'polar' && not != 'hex' && not != 'oct' && 
+        not != 'frac' && not != 'complex' && not != 'polar' && not != 'hex' && not != 'oct' &&
         not != 'bin' && s != 'Infinity' && s != '-Infinity' && s != 'Error') {
         var thssep = (store.comma != 'c') ? "," : ".";
         var m = 1; //default string has decimal point
@@ -1571,13 +1575,13 @@ function internal_gamma(x) {
     //with(Math) {
     if (x <= 0) {
         if (Math.abs(x) - Math.floor(Math.abs(x)) == 0)
-        // should be complex infinity but we do not have
-        // complex numbers
+            // should be complex infinity but we do not have
+            // complex numbers
             return 'Error';
         else
             return Math.pi / (Math.sin(Math.PI * x) * Math.exp(internal_loggamma(1 - x)));
     } else
-    //console.log(Math.exp(internal_loggamma(x)));
+        //console.log(Math.exp(internal_loggamma(x)));
         return Math.exp(internal_loggamma(x));
     //}
 }
@@ -2228,70 +2232,42 @@ function calcrate(rate) { //calculates rate conversion for menu
     return r;
 }
 
-
-function getYahooRate(from, to) {
-    var script = document.createElement('script');
-
-    script.setAttribute('src', "http://query.yahooapis.com/v1/public/yql?q=select%20rate%2Cname%20from%20csv%20where%20url%3D'http%3A%2F%2Fdownload.finance.yahoo.com%2Fd%2Fquotes%3Fs%3D" + from + to + "%253DX%26f%3Dl1n'%20and%20columns%3D'rate%2Cname'&format=json&callback=parseExchangeRate");
-
-    document.body.appendChild(script);
-}
-
-
-function parseExchangeRate(data) { //callback for getYahooRate
-    try {
-        var name = data.query.results.row.name.slice(4);
-        //        console.log(data.query.results.row.rate);
-        //        console.log(data.query.results.row.name+" "+name);
-        var d = new Date();
-        for (i = 0; i < m[4].length; i++) {
-            if (name == m[4][i][2]) {
-                m[4][i][3] = parseFloat(data.query.results.row.rate, 10);
-                m[4][i][4] = 'Yahoo-' + d.toLocaleDateString();
-            }
-        }
-    } catch (err) {
-        console.log(err);
-    }
-}
-
 function getRates() {
     var i, n, x;
-    if (run_as == 'ext' || run_as == 'app') { //ECB-xml only works in Chrome extension or app
-        //    if (run_as == 'xxx') { //ECB-xml only works in Chrome extension or app
-        var xhr = new XMLHttpRequest();
-        xhr.open("GET", "http://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml", true);
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState == 4) {
-                var xrates = xhr.responseText;
-                if (xrates != '') {
-                    n = xrates.search(m[4][store.bcn][2]);
-                    if (n > 0) { //x =exchange rate of basecurrency to Euro in ecb-list
-                        x = parseFloat(xrates.substring(n + 11, xrates.indexOf("'", n + 12)));
-                    } else {
-                        x = 1.0;
+    var url = "https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml";
+    var xhr = new XMLHttpRequest();
+    if (run_as === 'ext' || run_as === 'app') { //ECB-xml only works in Chrome extension or app
+        xhr.open("GET", url);
+    } else { //run as web-application
+        // Bypass 'Access-Control-Allow-Origin' error, see: https://ourcodeworld.com/articles/read/73/how-to-bypass-access-control-allow-origin-error-with-xmlhttprequest-jquery-ajax-
+        var proxy = 'https://cors-anywhere.herokuapp.com/';
+        xhr.open("GET", proxy + url);
+    }
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState == 4) {
+            var xrates = xhr.responseText;
+            // console.log('ECB-xrates: ' + xrates);
+            if (xrates != '') {
+                n = xrates.search(m[4][store.bcn][2]);
+                if (n > 0) { //x =exchange rate of basecurrency to Euro in ecb-list
+                    x = parseFloat(xrates.substring(n + 11, xrates.indexOf("'", n + 12)));
+                } else {
+                    x = 1.0;
+                }
+                var d = new Date();
+                for (i = 0; i < m[4].length; i++) {
+                    n = xrates.search(m[4][i][2]);
+                    if (n > 0) {
+                        m[4][i][3] = (parseFloat(xrates.substring(n + 11, xrates.indexOf("'", n + 12))) / x).toString().slice(0, 7);
+                    } else { //as EUR is not in list ECB
+                        m[4][i][3] = (1.0 / x).toString().slice(0, 7);
                     }
-                    var d = new Date();
-                    for (i = 0; i < m[4].length; i++) {
-                        n = xrates.search(m[4][i][2]);
-                        if (n > 0) {
-                            m[4][i][3] = (parseFloat(xrates.substring(n + 11, xrates.indexOf("'", n + 12))) / x).toString().slice(0, 7);
-                        } else { //as EUR is not in list ECB
-                            m[4][i][3] = (1.0 / x).toString().slice(0, 7);
-                        }
-                        m[4][i][4] = 'ECB-' + d.toLocaleDateString();
-                    }
+                    m[4][i][4] = 'ECB-' + d.toLocaleDateString();
                 }
             }
-        };
-        xhr.send();
-    } else { //run as web-application
-        var d = new Date();
-        for (i = 0; i < m[4].length; i++) {
-            getYahooRate(m[4][store.bcn][2], m[4][i][2]);
-            m[4][i][4] = 'Yahoo-' + d.toLocaleDateString();
         }
-    }
+    };
+    xhr.send();
 }
 
 function getconstant(n) {

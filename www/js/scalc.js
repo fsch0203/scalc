@@ -2,11 +2,13 @@
 // JavaScript Document
 
 // window.addEventListener("load", Init);
+window.resizeTo(640, 610);
 window.addEventListener("DOMContentLoaded", Init);
 
 function Init() {
     var f = document.rpncal;
     getLocalStorage(); //including language setting _lg
+    window.moveTo(store.screenx, store.screeny);
     defineconstants(); //set m[]
     applyStorage(); //set memories, stacks, etc
     setFooter(); //status bar + footer
@@ -245,13 +247,6 @@ function showmenu(layer) {
     var txt1, txt2, txt3, lb, i;
     // var browser = checkbrowser();
     //if (browser != 'chrome') m[0][17] = ['', ''];
-    if (layer !== 'start') {
-        try {
-            _gaq.push(['_trackEvent', 'Menu', layer]);
-        } catch (e) {
-            console.log("trackevent " + layer + " failed");
-        }
-    }
     txt1 = "";
     txt2 = "<br><br>";
     txt3 = "<br><br>";
@@ -602,18 +597,18 @@ function showpressedkey(char) { // for instructions: show pressed char
     }, 1000);
 }
 
-function callwindow() {
-    if (run_as == 'ext') {
-        chrome.windows.create({
-            url: "popup.html",
-            left: 200,
-            top: 100,
-            width: 640,
-            height: 610,
-            type: "popup"
-        });
-    }
-}
+// function callwindow() {
+//     if (run_as == 'ext') {
+//         chrome.windows.create({
+//             url: "popup.html",
+//             left: 200,
+//             top: 100,
+//             width: 640,
+//             height: 610,
+//             type: "popup"
+//         });
+//     }
+// }
 
 function addChar(character) { // add a new character to the display
     f = document.rpncal;
@@ -1455,7 +1450,8 @@ function chkkey(e) { //is triggered when 'onkeypress' **************************
         } else if (keychar == "-") {
             var x = stack[0].toString();
             var y = x.replace('e-', 'E');
-            if (x.substring(x.length - 1, x.length) == "e" && x.substring(0, 1) != "0") { //negate if last digit is e (enter exponent) and not hex/oct/bin
+            if (x.substring(x.length - 1, x.length) == "e" && x.substring(0, 2) != "0x" && x.substring(0, 2) != "0o" 
+                && x.substring(0, 2) != "0b" ) { //negate if last digit is e (enter exponent) and not hex/oct/bin
                 addChar(keychar);
             } else if (!(computed || enterpressed) && x.substring(0, 1) === "(" && y.indexOf('+') < 0 &&
                 (y.indexOf('-') < 0 || y.substring(0, 2) === '(-')) { //exception for first '-' in complex numbers

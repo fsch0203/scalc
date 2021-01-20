@@ -1,6 +1,6 @@
 # Mouseless Stack-Calculator
 
-Mouseless Stack-Calculator is a innovative calculator and currency converter with fast keyboard entry. It has two modes: an RPN-mode and a stack-mode. The well known RPN stands for Reverse Polish Notation and it saves you time as it avoids the use of parenthesis. The only catch is that the entry of data is a bit different to what most people expect, so you have to learn to work with it. The stack-mode of this calculator is new. It's a bit similar to RPN in the way that is also uses a stack an avoids the use of parenthesis. But it's unique in the way that it has no reversed data entry but follows the 'normal' sequence. All calculations can be done by use of the keyboard, so no time consuming mouse clicks. It can handle both real and complex numbers and supports different notations. Mouse Stack-Calculator is available as Chrome extension, as desktop app and can run in a webbrowser window.
+Mouseless Stack-Calculator is a innovative calculator and currency converter with fast keyboard entry. It has two modes: an RPN-mode and a stack-mode. The well known RPN stands for Reverse Polish Notation and it saves you time as it avoids the use of parenthesis. The only catch is that the entry of data is a bit different to what most people expect, so you have to learn to work with it. The stack-mode of this calculator is new. It's a bit similar to RPN in the way that is also uses a stack an avoids the use of parenthesis. But it's unique in the way that it has no reversed data entry but follows the 'normal' sequence. All calculations can be done by use of the keyboard, so no time consuming mouse clicks. It can handle both real and complex numbers and supports different notations. Mouse Stack-Calculator is available as Chrome and Edge extension, as desktop app and can run in a webbrowser window.
 
 ## Main features
 
@@ -25,6 +25,15 @@ Mouseless Stack-Calculator is a innovative calculator and currency converter wit
 - Physical constants and conversions
 
 ## Change history
+
+#### Version 1.240
+- Bug fix: accept entry with negative exponent correctly
+
+#### Version 1.230
+- Extension ported to MS-Edge
+- Last position of window is saved
+- ECB now only provider of daily exchange rates (yahoo removed)
+- Minor bugs fixed
 
 #### Version 1.220
 - No thousandseparator in case of hexadecimal, octal and binary numbers
