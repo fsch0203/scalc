@@ -17,6 +17,9 @@ try {
         //run_as = 'web';
     }
 }
+if (run_as === 'web'){
+    window.resizeTo(640, 636); //cannot hide address bar
+}
 var _lg = languages.us; //refers to languages.js
 var shift = '0'; //function keys
 var cvdir = 'r'; //default conversion direction
