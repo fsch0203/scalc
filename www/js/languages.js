@@ -48,7 +48,7 @@ var languages = {
             "Recall by pressing <b>r</b>.",
         help_i1: "Integrated currency conversion: press <b>x</b>. With <b>y</b> you can set your default " +
             "currency. Press <b>z</b> to reverse calculation. <br>" +
-            "Exchange rates are refreshed when you load the app. Sources: ECB or Yahoo Finance." +
+            "Exchange rates are refreshed when you load the app. Source: ECB." +
             "<br>",
         help_i2: "CAGR (Compound Average Growth Rate) and Annuity: " +
             "press <b>f</b> and give 3 out of 4 variables to calculate the unknown variable. <br>" +
@@ -314,7 +314,7 @@ var languages = {
             "Opvragen via <b>r</b>.",
         help_i1: "Wisselkoersconversie: toets <b>x</b>. Toets daarna <b>y</b> om standaard valuta te kiezen. " +
             "Toets <b>z</b> voor omgekeerde conversie. <br>" +
-            "Wisselkoersen worden ververst bij het laden van de app. Bronnen: ECB of Yahoo Finance." +
+            "Wisselkoersen worden ververst bij het laden van de app. Bron: ECB." +
             "<br>",
         help_i2: "CAGR (Samengestelde jaarlijkse groei) and Annuïteit: " +
             "toets <b>f</b> en geef 3 van de 4 variabelen om de onbekende variabele te berekenen. <br>" +

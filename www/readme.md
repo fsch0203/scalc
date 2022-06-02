@@ -31,6 +31,9 @@ Mouseless Stack-Calculator is a innovative calculator and currency converter wit
 
 ## Change history
 
+### Version 1.250 (draft)
+- Minor bugs fixed
+
 ### Version 1.240
 - Bug fix: accept entry with negative exponent correctly
 

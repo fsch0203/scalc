@@ -2,7 +2,7 @@ chrome.browserAction.onClicked.addListener(function(tab) {
     chrome.windows.create({
       url: chrome.runtime.getURL("popup.html"),
       type: "popup",
-      left: 5000,
+      left: 500,
       top: 50,
       width: 640,
       height: 610
